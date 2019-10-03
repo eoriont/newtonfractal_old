@@ -34,17 +34,11 @@ class ComplexNumber {
     let newB = ((this.b * num.a) - (this.a * num.b))/(num.a**2 + num.b**2);
     this.a = newA;
     this.b = newB;
-    if ((num.a**2 + num.b**2) == 0) this.divide_by_zero = true
     return this;
   }
 
   pow(num) {
-    let newNum = new ComplexNumber(this.a, this.b);
-    if (num == 0) {
-      newNum.a = 1;
-      newNum.b = 0;
-      return newNum;
-    }
+    let newNum = new ComplexNumber(1, 0);
     for (let i = 0; i < num; i++) {
       newNum.multiply(this);
     }
@@ -106,8 +100,10 @@ var polynom = new Polynomial([1, 0, 0, -1]);
 var zeros;
 var colors = ['red', 'green', 'blue'];
 
+var screensize = {x: 500, y: 500}
+
 function setup() {
-  createCanvas(500, 500);
+  createCanvas(screensize.x, screensize.y);
   noStroke();
 
   zeros = [new ComplexNumber(1, 0), new ComplexNumber(-.5, -sqrt(3)/2), new ComplexNumber(-.5, sqrt(3)/2)]
@@ -124,32 +120,39 @@ var xPos = 0;
 var yPos = 0;
 var go = false;
 
-let resolution = 1;
-let startPos = {x: -.000015, y: -.000015}
-let zoom = 10000000;
+var resolution = 1;
+
+var tolerance = .05;
+
+var iterations = 500;
+
+var zoom = 1;
+
+var startPos = {x: -250/zoom, y: -250/zoom}
 function drawFractal() {
   if (!go) return;
-  if (!(yPos < resolution * 500)) {
+  if (!(yPos < resolution * screensize.y)) {
     console.log("Finished");
     return;
   }
-  
+
   doRow();
   yPos++;
 }
 
-function isWithinRangeOf(arr, range, val) {
+function findNearestZero(val, arr) {
+  let distance = arr[0].dist(val);
+  let z = arr[0];
   for (let i of arr) {
-    if (val.dist(i) < range) {
-      return i;
+    if (i.dist(val) < distance) {
+      z = i;
     }
   }
-
-  return false;
+  return {zero: z, dist: distance};
 }
 
 function doRow() {
-  for (let i = 0; i < resolution * 500; i++) {
+  for (let i = 0; i < resolution * screensize.x; i++) {
     xPos = i;
     doPixel(i, yPos);
   }
@@ -160,13 +163,14 @@ function doPixel(x, y) {
   let finalNumber;
   let keepGoing
   let isnan = false;
+  let i = 0;
   do {
     val = newtonsMethod(val, polynom);
-    finalNumber = isWithinRangeOf(zeros, 1, val)
-    keepGoing = typeof(finalNumber) != "object";
+    keepGoing = findNearestZero(val, zeros).dist > tolerance;
     isnan = (isNaN(val.a) || isNaN(val.b))
-    if (isnan) keepGoing = false;
-  } while (keepGoing);
+    i++;
+  } while (keepGoing && i <= iterations && !isnan);
+  finalNumber = findNearestZero(val, zeros).zero;
   let col = isnan ? 'black' : colors[zeros.indexOf(finalNumber)];
   fill(col);
   rect(x /resolution, y / resolution, 1/resolution, 1/resolution);
