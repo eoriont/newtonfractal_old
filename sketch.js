@@ -98,7 +98,6 @@ function newtonsMethod(xn, p) {
 
 var polynom;
 var zeros;
-var colors = ['red', 'green', 'blue', 'yellow'];
 
 var go = false;
 
@@ -106,6 +105,7 @@ var resolution = 1;
 var tolerance = .05;
 var iterations = 500;
 var zoom = 1;
+var darkTolerance = 1;
 
 var xPos = 0;
 var yPos = 0;
@@ -115,9 +115,23 @@ var screensize = {x: 500, y: 500}
 function setup() {
   createCanvas(screensize.x, screensize.y);
   noStroke();
+  colorMode(HSB, 100);
 
-  zeros = [new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(0, 1), new ComplexNumber(0, -1)];
-  polynom = new Polynomial([1, 0, 0, 0, -1]);
+  zeros = [new ComplexNumber(1, 0), new ComplexNumber(-.5, sqrt(3)/2), new ComplexNumber(-.5, -sqrt(3)/2)]
+  polynom = new Polynomial([1, 0, 0, -1]);
+
+  // zeros = [new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(0, 1), new ComplexNumber(0, -1)];
+  // polynom = new Polynomial([1, 0, 0, 0, -1]);
+
+  // zeros = [new ComplexNumber(1, 0), new ComplexNumber((-1/4)+(sqrt(5)/4), sqrt(10+(2*sqrt(5)))/4), new ComplexNumber((-1/4)+(sqrt(5)/4), -sqrt(10+(2*sqrt(5)))/4), new ComplexNumber((-1/4)-(sqrt(5)/4), sqrt(10-(2*sqrt(5)))/4), new ComplexNumber((-1/4)-(sqrt(5)/4), -sqrt(10-(2*sqrt(5)))/4)];
+  // polynom = new Polynomial([1, 0, 0, 0, 0, -1]);
+
+  zeros = [new ComplexNumber(-.5, .86602), new ComplexNumber(-.5, -.86602), new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(.5, .86602), new ComplexNumber(.5, -.86602)]
+  polynom = new Polynomial([1, 0, 0, 0, 0, 0, -1]);
+
+  // zeros = [new ComplexNumber(.88464, .58974), new ComplexNumber(.88464, .58974), new ComplexNumber(1.76929, 0)];
+  // polynom = new Polynomial([1, 0, -2, 2]);
+  // darkTolerance = 4;
 
   var button = createButton("Start!");
   button.mousePressed(() => {go=!go;button.html(go ? "Pause" : "Unpause")})
@@ -145,7 +159,7 @@ function findNearestZero(val, arr) {
 
   for (let i of arr) {
     if (i.dist(val) < distance) {
-      distance = i.dist(val)
+      distance = i.dist(val);
       z = i;
     }
   }
@@ -159,20 +173,29 @@ function doRow() {
   }
 }
 
+function getColor(z, zs, dist) {
+  let colorNum = zs.indexOf(z);
+  let colorh = (100 * colorNum) / (zs.length);
+  let col = color(colorh, 100, (100/darkTolerance) * (darkTolerance-dist));
+  
+  return col;
+}
+
 function doPixel(x, y) {
   let val = new ComplexNumber((x/zoom) + startPos.x, (y/zoom) + startPos.y);
   let finalNumber;
   let keepGoing
   let isnan = false;
   let i = 0;
+  let nearestZero;
   do {
     val = newtonsMethod(val, polynom);
-    keepGoing = findNearestZero(val, zeros).dist > tolerance;
+    nearestZero = findNearestZero(val, zeros);
+    keepGoing = nearestZero.dist > tolerance;
     isnan = (isNaN(val.a) || isNaN(val.b))
     i++;
   } while (keepGoing && i <= iterations && !isnan);
-  finalNumber = findNearestZero(val, zeros).zero;
-  let col = isnan ? 'black' : colors[zeros.indexOf(finalNumber)];
-  fill(col);
-  rect(x /resolution, y / resolution, 1/resolution, 1/resolution);
+  finalNumber = nearestZero.zero;
+  fill(isnan ? 'black' : getColor(finalNumber, zeros, nearestZero.dist));
+  rect(x /resolution, y / resolution, 1 / resolution, 1 / resolution);
 }
