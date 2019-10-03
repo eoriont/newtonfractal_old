@@ -96,42 +96,41 @@ function newtonsMethod(xn, p) {
   return result;
 }
 
-var polynom = new Polynomial([1, 0, 0, -1]);
+var polynom;
 var zeros;
-var colors = ['red', 'green', 'blue'];
+var colors = ['red', 'green', 'blue', 'yellow'];
 
+var go = false;
+
+var resolution = 1;
+var tolerance = .05;
+var iterations = 500;
+var zoom = 1;
+
+var xPos = 0;
+var yPos = 0;
+var startPos = {x: -250/zoom, y: -250/zoom}
 var screensize = {x: 500, y: 500}
 
 function setup() {
   createCanvas(screensize.x, screensize.y);
   noStroke();
 
-  zeros = [new ComplexNumber(1, 0), new ComplexNumber(-.5, -sqrt(3)/2), new ComplexNumber(-.5, sqrt(3)/2)]
+  zeros = [new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(0, 1), new ComplexNumber(0, -1)];
+  polynom = new Polynomial([1, 0, 0, 0, -1]);
 
   var button = createButton("Start!");
-  button.mousePressed(() => {go=true})
+  button.mousePressed(() => {go=!go;button.html(go ? "Pause" : "Unpause")})
 }
 
 function draw() {
   drawFractal();
 }
 
-var xPos = 0;
-var yPos = 0;
-var go = false;
-
-var resolution = 1;
-
-var tolerance = .05;
-
-var iterations = 500;
-
-var zoom = 1;
-
-var startPos = {x: -250/zoom, y: -250/zoom}
 function drawFractal() {
   if (!go) return;
   if (!(yPos < resolution * screensize.y)) {
+    go = false;
     console.log("Finished");
     return;
   }
@@ -143,8 +142,10 @@ function drawFractal() {
 function findNearestZero(val, arr) {
   let distance = arr[0].dist(val);
   let z = arr[0];
+
   for (let i of arr) {
     if (i.dist(val) < distance) {
+      distance = i.dist(val)
       z = i;
     }
   }
