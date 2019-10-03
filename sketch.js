@@ -103,46 +103,71 @@ function newtonsMethod(xn, p) {
 }
 
 var polynom = new Polynomial([1, 0, 0, -1]);
-var zeros = [1, 0, 7];
+var zeros;
 var colors = ['red', 'green', 'blue'];
 
 function setup() {
-  s1etup();
-}
-
-function s1etup() {
-  let resolution = 1;
-  let startPos = {x: -250, y: -250}
-  let zoom = .0001;
   createCanvas(500, 500);
   noStroke();
-  console.log("Starting");
-  for (let x = 0; x < resolution*500; x++) {
-    for (let y = 0; y < resolution*500; y++) {
-      let zero;
-      let val = new ComplexNumber((x/zoom) + startPos.x, (y/zoom) + startPos.y);
-      let finalNumber;
-      let keepGoing
-      do {
-        val = newtonsMethod(val, polynom);
-        finalNumber = isWithinRangeOf(zeros, 1, val)
-        keepGoing = typeof(finalNumber) != "number";
-      } while (keepGoing);
-      let col = colors[zeros.indexOf(finalNumber)];
-      fill(col);
-      rect(x /resolution, y / resolution, 1/resolution, 1/resolution);
-    }
+
+  zeros = [new ComplexNumber(1, 0), new ComplexNumber(-.5, -sqrt(3)/2), new ComplexNumber(-.5, sqrt(3)/2)]
+
+  var button = createButton("Start!");
+  button.mousePressed(() => {go=true})
+}
+
+function draw() {
+  drawFractal();
+}
+
+var xPos = 0;
+var yPos = 0;
+var go = false;
+
+let resolution = 1;
+let startPos = {x: -.000015, y: -.000015}
+let zoom = 10000000;
+function drawFractal() {
+  if (!go) return;
+  if (!(yPos < resolution * 500)) {
+    console.log("Finished");
+    return;
   }
-  console.log("Finished");
+  
+  doRow();
+  yPos++;
 }
 
 function isWithinRangeOf(arr, range, val) {
-
   for (let i of arr) {
-    if (val.dist(new ComplexNumber(i, 0)) < range) {
+    if (val.dist(i) < range) {
       return i;
     }
   }
 
   return false;
+}
+
+function doRow() {
+  for (let i = 0; i < resolution * 500; i++) {
+    xPos = i;
+    doPixel(i, yPos);
+  }
+}
+
+function doPixel(x, y) {
+  let val = new ComplexNumber((x/zoom) + startPos.x, (y/zoom) + startPos.y);
+  let finalNumber;
+  let keepGoing
+  let isnan = false;
+  do {
+    val = newtonsMethod(val, polynom);
+    finalNumber = isWithinRangeOf(zeros, 1, val)
+    keepGoing = typeof(finalNumber) != "object";
+    isnan = (isNaN(val.a) || isNaN(val.b))
+    if (isnan) keepGoing = false;
+  } while (keepGoing);
+  let col = isnan ? 'black' : colors[zeros.indexOf(finalNumber)];
+  fill(col);
+  rect(x /resolution, y / resolution, 1/resolution, 1/resolution);
 }
