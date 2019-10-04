@@ -126,8 +126,8 @@ function setup() {
   // zeros = [new ComplexNumber(1, 0), new ComplexNumber((-1/4)+(sqrt(5)/4), sqrt(10+(2*sqrt(5)))/4), new ComplexNumber((-1/4)+(sqrt(5)/4), -sqrt(10+(2*sqrt(5)))/4), new ComplexNumber((-1/4)-(sqrt(5)/4), sqrt(10-(2*sqrt(5)))/4), new ComplexNumber((-1/4)-(sqrt(5)/4), -sqrt(10-(2*sqrt(5)))/4)];
   // polynom = new Polynomial([1, 0, 0, 0, 0, -1]);
 
-  // zeros = [new ComplexNumber(-.5, .86602), new ComplexNumber(-.5, -.86602), new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(.5, .86602), new ComplexNumber(.5, -.86602)]
-  // polynom = new Polynomial([1, 0, 0, 0, 0, 0, -1]);
+  zeros = [new ComplexNumber(-.5, .86602), new ComplexNumber(-.5, -.86602), new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(.5, .86602), new ComplexNumber(.5, -.86602)]
+  polynom = new Polynomial([1, 0, 0, 0, 0, 0, -1]);
 
   // zeros = [new ComplexNumber(.88464, .58974), new ComplexNumber(.88464, .58974), new ComplexNumber(1.76929, 0)];
   // polynom = new Polynomial([1, 0, -2, 2]);
