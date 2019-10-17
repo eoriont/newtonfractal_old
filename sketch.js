@@ -22,8 +22,10 @@ function setup() {
   // zeros = [new ComplexNumber(1, 0), new ComplexNumber(-.5, sqrt(3)/2), new ComplexNumber(-.5, -sqrt(3)/2)]
   // polynom = new Polynomial([1, 0, 0, -1]);
 
-  zeros = [new ComplexNumber(1, 0), new ComplexNumber(-.5, sqrt(3)/2), new ComplexNumber(-.5, -sqrt(3)/2)]
-  polynom = Polynomial.fromZeros(zeros);
+  zeros = [c(1, 0), c(-.5, sqrt(3)/2), c(-.5, -sqrt(3)/2)]
+  // polynom = Polynomial.fromZeros(zeros);
+  polynom = p([c(1, 0), c(), c(-1, 0)]);
+  console.log(""+polynom)
 
   // zeros = [new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(0, 1), new ComplexNumber(0, -1)];
   // polynom = new Polynomial([1, 0, 0, 0, -1]);

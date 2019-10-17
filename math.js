@@ -5,43 +5,37 @@ class ComplexNumber {
   }
 
   add(num) {
-    this.a += num.a;
-    this.b += num.b;
-
-    return this;
+    let newA = this.a + num.a;
+    let newB = this.b + num.b;
+    return c(newA, newB);
   }
 
   subtract(num) {
-    this.a -= num.a;
-    this.b -= num.b;
+    let newA = this.a - num.a;
+    let newB = this.b - num.b;
 
-    return this;
+    return c(newA, newB);
   }
 
   multiply(num) {
     let newA = (this.a * num.a) - (this.b * num.b);
     let newB = (this.a * num.b) + (this.b * num.a);
 
-    this.a = newA;
-    this.b = newB;
-
-    return this;
+    return c(newA, newB);
   }
 
   divide(num) {
     let newA = ((this.a * num.a) + (this.b * num.b))/(num.a**2 + num.b**2);
     let newB = ((this.b * num.a) - (this.a * num.b))/(num.a**2 + num.b**2);
-    this.a = newA;
-    this.b = newB;
-    return this;
+
+    return c(newA, newB);
   }
 
   pow(num) {
-    let newNum = new ComplexNumber(1, 0);
+    let newNum = c(1, 0);
     for (let i = 0; i < num; i++) {
-      newNum.multiply(this);
+      newNum = newNum.multiply(this);
     }
-
     return newNum;
   }
 
@@ -54,10 +48,11 @@ class ComplexNumber {
   }
 }
 
-
+function c(a = 0, b = 0) {
+  return new ComplexNumber(a, b);
+}
 /*
  *  The Polynomial Constructor is backwards, so new Polynomial([1, 2, 3]) = 3x^2 + 2x + 1
- *  TODO: Make Complex Polynomials
  */
 class Polynomial {
   constructor(terms = []) {
@@ -65,11 +60,9 @@ class Polynomial {
   }
 
   evaluate(x) {
-    let degree = this.length();
-    let result = new ComplexNumber();
-
-    for (let i = 0; i < degree; i++) {
-      let evalTerm = new ComplexNumber(this.getTerm(i), 0).multiply(x.pow(i))
+    let result = c();
+    for (let i = 0; i < this.length(); i++) {
+      let evalTerm = this.getTerm(i).multiply(x.pow(i))
       result.add(evalTerm);
     }
 
@@ -80,7 +73,7 @@ class Polynomial {
     let d = new Polynomial();
 
     for (let i = 0; i < this.length()-1; i++) {
-      let newTerm = this.getTerm(i+1) * (i+1);
+      let newTerm = this.getTerm(i+1).multiply(c(i+1, 0));
       d.setTerm(i, newTerm);
     }
     return d;
@@ -92,30 +85,30 @@ class Polynomial {
 
   add(polynomial) {
     let longestLength = polynomial.length() > this.length() ? polynomial.length() : this.length();
-    let p = new Polynomial();
+    let p = p();
     for (let i = 0; i < longestLength; i++) {
       let a = this.getTerm(i)
       let b = polynomial.getTerm(i)
-      p.setTerm(i, a + b);
+      p.setTerm(i, a.add(b));
     }
     return p;
   }
 
   subtract(polynomial) {
-    return polynomial.multiply(new Polynomial([-1])).add(this);
+    return polynomial.multiply(p([c(-1, 0)])).add(this);
   }
 
   multiply(polynomial) {
-    let p = new Polynomial();
+    let p = p();
     let longestLength = polynomial.length() > this.length() ? polynomial.length() : this.length();
 
     for(let i = 0; i < this.length(); i++) {
-      let tP = new Polynomial();
+      let tP = p();
       let thisTerm = this.getTerm(i);
       for (let j = 0; j < polynomial.length(); j++) {
         let pTerm = polynomial.getTerm(j);
 
-        let newTerm = thisTerm * pTerm;
+        let newTerm = thisTerm.multiply(pTerm);
         let newIndex = i + j;
 
         tP.setTerm(newIndex, newTerm);
@@ -130,7 +123,7 @@ class Polynomial {
   }
 
   getTerm(index) {
-    return this.terms[index] == undefined ? 0 : this.terms[index];
+    return this.terms[index] == undefined ? c() : this.terms[index];
   }
 
   getTerms() {
@@ -138,15 +131,29 @@ class Polynomial {
   }
 
   static fromZeros(arr) {
-    debugger;
     let pArr = [];
     for (let i of arr) {
-      pArr.push(new Polynomial([-i, 1]));
+      pArr.push(p([i.multiply(c(-1, 0)), c(1, 0)]));
     }
-    let p = new Polynomial([1])
+    let p = p([c(1, 0)])
     for (let i of pArr) {
       p = p.multiply(i);
     }
     return p;
   }
+
+  toString() {
+    let string = "";
+    for (let i = 0; i < this.length(); i++) {
+      let t = this.getTerm(this.length()-i-1);
+      let str = `(${t})x^${this.length()-i-1}`
+      string += `${str} +`
+    }
+    string = string.slice(0, -1)
+    return string;
+  }
+}
+
+function p(arr = []) {
+  return new Polynomial(arr)
 }
