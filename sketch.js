@@ -19,29 +19,23 @@ function setup() {
   noStroke();
   colorMode(HSB, 100);
 
-  // zeros = [new ComplexNumber(1, 0), new ComplexNumber(-.5, sqrt(3)/2), new ComplexNumber(-.5, -sqrt(3)/2)]
-  // polynom = new Polynomial([1, 0, 0, -1]);
+  // zeros = [c(1, 0), c(-.5, sqrt(3)/2), c(-.5, -sqrt(3)/2)]
 
-  zeros = [c(1, 0), c(-.5, sqrt(3)/2), c(-.5, -sqrt(3)/2)]
-  // polynom = Polynomial.fromZeros(zeros);
-  polynom = p([c(1, 0), c(), c(-1, 0)]);
-  console.log(""+polynom)
+  zeros = [c(1, 0), c(-1, 0), c(0, 1), c(0, -1)];
 
-  // zeros = [new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(0, 1), new ComplexNumber(0, -1)];
-  // polynom = new Polynomial([1, 0, 0, 0, -1]);
+  // zeros = [c(1, 0), c((-1/4)+(sqrt(5)/4), sqrt(10+(2*sqrt(5)))/4), c((-1/4)+(sqrt(5)/4), -sqrt(10+(2*sqrt(5)))/4), c((-1/4)-(sqrt(5)/4), sqrt(10-(2*sqrt(5)))/4), c((-1/4)-(sqrt(5)/4), -sqrt(10-(2*sqrt(5)))/4)];
 
-  // zeros = [new ComplexNumber(1, 0), new ComplexNumber((-1/4)+(sqrt(5)/4), sqrt(10+(2*sqrt(5)))/4), new ComplexNumber((-1/4)+(sqrt(5)/4), -sqrt(10+(2*sqrt(5)))/4), new ComplexNumber((-1/4)-(sqrt(5)/4), sqrt(10-(2*sqrt(5)))/4), new ComplexNumber((-1/4)-(sqrt(5)/4), -sqrt(10-(2*sqrt(5)))/4)];
-  // polynom = new Polynomial([1, 0, 0, 0, 0, -1]);
+  // zeros = [c(-.5, .86602), c(-.5, -.86602), c(1, 0), c(-1, 0), c(.5, .86602), c(.5, -.86602)]
 
-  // zeros = [new ComplexNumber(-.5, .86602), new ComplexNumber(-.5, -.86602), new ComplexNumber(1, 0), new ComplexNumber(-1, 0), new ComplexNumber(.5, .86602), new ComplexNumber(.5, -.86602)]
-  // polynom = new Polynomial([-1, 0, 0, 0, 0, 0, 1]);
+  zeros = [c(.88464, .58974), c(.88464, .58974), c(1.76929, 0)];
+  polynom = new Polynomial([1, 0, -2, 2]);
+  darkTolerance = 4;
 
-  // zeros = [new ComplexNumber(.88464, .58974), new ComplexNumber(.88464, .58974), new ComplexNumber(1.76929, 0)];
-  // polynom = new Polynomial([1, 0, -2, 2]);
-  // darkTolerance = 4;
-
-  var button = createButton("Start!");
-  button.mousePressed(() => {go=!go;button.html(go ? "Pause" : "Unpause")})
+  // polynom = Polynomial.fromZeros(zeros)
+  var polynomText = createP(`\\(${polynom}\\)`)
+  // var button = createButton("Start!", ["class='button'"]);
+  // button.mousePressed(() => {go=!go;button.html(go ? "Pause" : "Unpause")})
+  MathJax.typeset("p")
 }
 
 function draw() {
@@ -111,3 +105,10 @@ function doPixel(x, y) {
   fill(isnan ? 'black' : getColor(finalNumber, zeros, nearestZero.dist));
   rect(x /resolution, y / resolution, 1 / resolution, 1 / resolution);
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("toggleState").addEventListener("click", () => {
+    go = !go;
+    document.getElementById("toggleState").innerHTML = go ? 'Pause' : 'Unpause'
+  })
+})

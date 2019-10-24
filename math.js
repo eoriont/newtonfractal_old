@@ -40,7 +40,7 @@ class ComplexNumber {
   }
 
   toString() {
-    return `${this.a} + ${this.b}i`;
+    return `${this.a.toFixed(2)} + ${this.b.toFixed(2)}i`;
   }
 
   dist(num) {
@@ -56,16 +56,17 @@ function c(a = 0, b = 0) {
  */
 class Polynomial {
   constructor(terms = []) {
-    this.terms = terms;
+    this.terms = terms.map(t => {
+      return typeof t != "object" ? c(t) : t
+    })
   }
 
   evaluate(x) {
     let result = c();
     for (let i = 0; i < this.length(); i++) {
       let evalTerm = this.getTerm(i).multiply(x.pow(i))
-      result.add(evalTerm);
+      result = result.add(evalTerm);
     }
-
     return result;
   }
 
@@ -85,13 +86,13 @@ class Polynomial {
 
   add(polynomial) {
     let longestLength = polynomial.length() > this.length() ? polynomial.length() : this.length();
-    let p = p();
+    let poly = p();
     for (let i = 0; i < longestLength; i++) {
       let a = this.getTerm(i)
       let b = polynomial.getTerm(i)
-      p.setTerm(i, a.add(b));
+      poly.setTerm(i, a.add(b));
     }
-    return p;
+    return poly;
   }
 
   subtract(polynomial) {
@@ -99,7 +100,7 @@ class Polynomial {
   }
 
   multiply(polynomial) {
-    let p = p();
+    let poly = p();
     let longestLength = polynomial.length() > this.length() ? polynomial.length() : this.length();
 
     for(let i = 0; i < this.length(); i++) {
@@ -113,9 +114,9 @@ class Polynomial {
 
         tP.setTerm(newIndex, newTerm);
       }
-      p = p.add(tP);
+      poly = poly.add(tP);
     }
-    return p;
+    return poly;
   }
 
   length() {
@@ -135,11 +136,11 @@ class Polynomial {
     for (let i of arr) {
       pArr.push(p([i.multiply(c(-1, 0)), c(1, 0)]));
     }
-    let p = p([c(1, 0)])
+    let poly = p([c(1, 0)])
     for (let i of pArr) {
-      p = p.multiply(i);
+      poly = poly.multiply(i);
     }
-    return p;
+    return poly;
   }
 
   toString() {
